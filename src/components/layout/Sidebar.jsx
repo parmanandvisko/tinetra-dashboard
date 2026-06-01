@@ -25,11 +25,12 @@ export default function Sidebar({ open, onClose }) {
   return (
     <aside
       className={`
-        fixed top-0 left-0 h-screen w-60 bg-sidebar flex flex-col z-50
+        fixed top-0 left-0 w-60 bg-sidebar flex flex-col z-50
         transition-transform duration-300 ease-in-out
         ${open ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}
+      style={{ height: '100dvh' }}
     >
       {/* Brand */}
       <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
