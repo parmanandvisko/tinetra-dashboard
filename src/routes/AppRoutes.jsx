@@ -9,6 +9,7 @@ import Categories from '../pages/Categories/Categories'
 import Contacts from '../pages/Contacts/Contacts'
 import Bookings from '../pages/Bookings/Bookings'
 import Theme from '../pages/Theme/Theme'
+import SiteContent from '../pages/SiteContent/SiteContent'
 
 const isAuth = () => !!localStorage.getItem('admin_token')
 
@@ -31,6 +32,7 @@ export default function AppRoutes() {
           <Route path="contacts" element={<Contacts />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="theme" element={<Theme />} />
+          <Route path="content" element={<SiteContent />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
