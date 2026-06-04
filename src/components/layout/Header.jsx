@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 const titles = {
   dashboard: 'Dashboard', packages: 'Tour Packages', destinations: 'Destinations',
   blogs: 'Blog Management', categories: 'Categories', contacts: 'Contact Messages',
-  bookings: 'Bookings', theme: 'Theme Settings',
+  bookings: 'Bookings', searches: 'Website Searches', theme: 'Theme Settings',
 }
 
 export default function Header({ onMenuToggle }) {

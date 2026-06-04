@@ -8,6 +8,7 @@ import AdminBlogs from '../pages/Blogs/AdminBlogs'
 import Categories from '../pages/Categories/Categories'
 import Contacts from '../pages/Contacts/Contacts'
 import Bookings from '../pages/Bookings/Bookings'
+import Searches from '../pages/Searches/Searches'
 import Theme from '../pages/Theme/Theme'
 import SiteContent from '../pages/SiteContent/SiteContent'
 
@@ -31,6 +32,7 @@ export default function AppRoutes() {
           <Route path="categories" element={<Categories />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="bookings" element={<Bookings />} />
+          <Route path="searches" element={<Searches />} />
           <Route path="theme" element={<Theme />} />
           <Route path="content" element={<SiteContent />} />
         </Route>

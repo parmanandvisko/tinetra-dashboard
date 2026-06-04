@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
+import ImageUploadField from '../../components/form/ImageUploadField'
 
 const EMPTY = { title: '', duration: '', price: '', originalPrice: '', type: 'international', tag: '', description: '', image: '', isFeature: false, isActive: true }
 
@@ -117,7 +118,7 @@ export default function Packages() {
                 <div><label className="label">Original Price ($)</label><input type="number" className="input" value={form.originalPrice} onChange={(e) => f('originalPrice', e.target.value)} /></div>
               </div>
               <div><label className="label">Tag</label><input className="input" value={form.tag} onChange={(e) => f('tag', e.target.value)} placeholder="Hill Stations, Beach..." /></div>
-              <div><label className="label">Image URL</label><input className="input" value={form.image} onChange={(e) => f('image', e.target.value)} placeholder="https://..." /></div>
+              <ImageUploadField label="Image" value={form.image} onChange={(url) => f('image', url)} />
               <div><label className="label">Description</label><textarea rows={3} className="input resize-none" value={form.description} onChange={(e) => f('description', e.target.value)} /></div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" checked={form.isFeature} onChange={(e) => f('isFeature', e.target.checked)} className="accent-primary" /> Featured</label>

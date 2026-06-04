@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
+import ImageUploadField from '../../components/form/ImageUploadField'
 
 const EMPTY = { name: '', subtitle: '', country: '', category: 'international', description: '', image: '', isFeature: false, isActive: true, rating: 4.5 }
 
@@ -94,7 +95,7 @@ export default function Destinations() {
                   </select>
                 </div>
               </div>
-              <div><label className="label">Image URL</label><input className="input" value={form.image} onChange={(e) => f('image', e.target.value)} placeholder="https://..." /></div>
+              <ImageUploadField label="Image" value={form.image} onChange={(url) => f('image', url)} />
               <div><label className="label">Description</label><textarea rows={3} className="input resize-none" value={form.description} onChange={(e) => f('description', e.target.value)} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="label">Rating</label><input type="number" step="0.1" min="0" max="5" className="input" value={form.rating} onChange={(e) => f('rating', e.target.value)} /></div>

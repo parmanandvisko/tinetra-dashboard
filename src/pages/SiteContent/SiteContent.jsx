@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
+import ImageUploadField from '../../components/form/ImageUploadField'
 
 const TABS = ['Business Info', 'Social Links', 'Hero Section', 'About Us', 'FAQ', 'Legal Pages']
 
@@ -12,7 +13,7 @@ const DEFAULT = {
   email: 'info@trinetraglobalholidays.com',
   address: '708, Mohan Nano Estates, Ambernath West, India 421505',
   logoUrl: '',
-  facebook: '', instagram: '', twitter: '', youtube: '',
+  facebook: '', instagram: '', linkedin: '', twitter: '', youtube: '',
   heroTitle: 'Where Would You Like To Go?',
   heroSubtitle: 'One life. Many destinations',
   heroBg: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&auto=format&fit=crop',
@@ -47,9 +48,10 @@ export default function SiteContent() {
   const save = async () => {
     setSaving(true)
     try {
-      await api.put('/settings', form)
+      const { _id, __v, createdAt, updatedAt, ...payload } = form
+      await api.put('/settings', payload)
       toast.success('Content saved & live on website!')
-    } catch { toast.error('Save failed') }
+    } catch (err) { toast.error(err.response?.data?.message || 'Save failed') }
     finally { setSaving(false) }
   }
 
@@ -106,7 +108,7 @@ export default function SiteContent() {
               <div><label className="label">Phone</label><input className="input" value={form.phone} onChange={e => set('phone', e.target.value)} /></div>
               <div><label className="label">WhatsApp Number (with country code, no +)</label><input className="input" value={form.whatsapp} onChange={e => set('whatsapp', e.target.value)} placeholder="919343088141" /></div>
               <div><label className="label">Email</label><input className="input" type="email" value={form.email} onChange={e => set('email', e.target.value)} /></div>
-              <div><label className="label">Logo URL (optional)</label><input className="input" value={form.logoUrl} onChange={e => set('logoUrl', e.target.value)} placeholder="https://..." /></div>
+              <ImageUploadField label="Logo" value={form.logoUrl} onChange={url => set('logoUrl', url)} />
             </div>
             <div><label className="label">Address</label><textarea rows={2} className="input resize-none" value={form.address} onChange={e => set('address', e.target.value)} /></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -122,7 +124,7 @@ export default function SiteContent() {
             <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wide text-primary">Social Media Links</h3>
             <p className="text-xs text-gray-400">Enter full URLs. Leave blank to hide the icon.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[['facebook', '🟦 Facebook'], ['instagram', '🟪 Instagram'], ['twitter', '🟦 Twitter / X'], ['youtube', '🟥 YouTube']].map(([k, label]) => (
+              {[['facebook', '🟦 Facebook'], ['instagram', '🟪 Instagram'], ['linkedin', 'LinkedIn'], ['twitter', '🟦 Twitter / X'], ['youtube', '🟥 YouTube']].map(([k, label]) => (
                 <div key={k}>
                   <label className="label">{label}</label>
                   <input className="input" value={form[k]} onChange={e => set(k, e.target.value)} placeholder="https://..." />
@@ -138,7 +140,7 @@ export default function SiteContent() {
             <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wide text-primary">Hero Section</h3>
             <div><label className="label">Subtitle (cursive text above main title)</label><input className="input" value={form.heroSubtitle} onChange={e => set('heroSubtitle', e.target.value)} /></div>
             <div><label className="label">Main Heading</label><input className="input" value={form.heroTitle} onChange={e => set('heroTitle', e.target.value)} /></div>
-            <div><label className="label">Background Image URL</label><input className="input" value={form.heroBg} onChange={e => set('heroBg', e.target.value)} placeholder="https://..." /></div>
+            <ImageUploadField label="Background Image" value={form.heroBg} onChange={url => set('heroBg', url)} />
             {form.heroBg && (
               <div className="rounded-xl overflow-hidden h-40">
                 <img src={form.heroBg} alt="Hero preview" className="w-full h-full object-cover" />
@@ -157,7 +159,7 @@ export default function SiteContent() {
                 <div><label className="label">Subtitle</label><input className="input" value={form.aboutSubtitle} onChange={e => set('aboutSubtitle', e.target.value)} /></div>
               </div>
               <div><label className="label">Description</label><textarea rows={4} className="input resize-none" value={form.aboutDescription} onChange={e => set('aboutDescription', e.target.value)} placeholder="Tell your company story..." /></div>
-              <div><label className="label">About Page Image URL</label><input className="input" value={form.aboutImage} onChange={e => set('aboutImage', e.target.value)} placeholder="https://..." /></div>
+              <ImageUploadField label="About Page Image" value={form.aboutImage} onChange={url => set('aboutImage', url)} />
             </div>
 
             {/* Stats */}
@@ -192,7 +194,7 @@ export default function SiteContent() {
                     <div className="flex-1 space-y-2">
                       <input className="input py-1.5 text-sm" value={m.name} onChange={e => setTeam(i, 'name', e.target.value)} placeholder="Full Name" />
                       <input className="input py-1.5 text-sm" value={m.role} onChange={e => setTeam(i, 'role', e.target.value)} placeholder="Job Title" />
-                      <input className="input py-1.5 text-xs" value={m.img} onChange={e => setTeam(i, 'img', e.target.value)} placeholder="Photo URL" />
+                      <ImageUploadField label="Photo" value={m.img} onChange={url => setTeam(i, 'img', url)} />
                     </div>
                     <button onClick={() => removeTeam(i)} className="text-red-400 hover:text-red-600 text-lg leading-none mt-0.5">×</button>
                   </div>

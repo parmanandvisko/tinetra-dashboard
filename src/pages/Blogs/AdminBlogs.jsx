@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
+import ImageUploadField from '../../components/form/ImageUploadField'
 
-const EMPTY = { title: '', excerpt: '', content: '', image: '', author: 'Admin', status: 'draft', readTime: '5 min read', tags: '' }
+const EMPTY = { title: '', excerpt: '', content: '', image: '', author: 'Admin', status: 'published', readTime: '5 min read', tags: '' }
 
 export default function AdminBlogs() {
   const [items, setItems] = useState([])
@@ -108,7 +109,7 @@ export default function AdminBlogs() {
                 <div><label className="label">Read Time</label><input className="input" value={form.readTime} onChange={(e) => f('readTime', e.target.value)} placeholder="5 min read" /></div>
                 <div><label className="label">Tags (comma-separated)</label><input className="input" value={form.tags} onChange={(e) => f('tags', e.target.value)} placeholder="travel, tips..." /></div>
               </div>
-              <div><label className="label">Image URL</label><input className="input" value={form.image} onChange={(e) => f('image', e.target.value)} placeholder="https://..." /></div>
+              <ImageUploadField label="Image" value={form.image} onChange={(url) => f('image', url)} />
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setModal(false)} className="flex-1 btn-secondary">Cancel</button>
                 <button type="submit" disabled={saving} className="flex-1 btn-primary">{saving ? 'Saving...' : editing ? 'Update' : 'Publish'}</button>
