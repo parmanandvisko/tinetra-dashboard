@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
 import ImageUploadField from '../../components/form/ImageUploadField'
+import ExportButton from '../../components/ui/ExportButton'
+import { formatDate } from '../../utils/exportExcel'
 
 const EMPTY = { name: '', subtitle: '', country: '', category: 'international', description: '', image: '', isFeature: false, isActive: true, rating: 4.5 }
 
@@ -15,7 +17,7 @@ export default function Destinations() {
 
   const load = () => {
     setLoading(true)
-    api.get('/destinations?limit=50').then((r) => setItems(r.data.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false))
+    api.get('/destinations?limit=1000').then((r) => setItems(r.data.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false))
   }
 
   useEffect(() => { load() }, [])
@@ -40,11 +42,26 @@ export default function Destinations() {
   }
 
   const f = (k, v) => setForm((p) => ({ ...p, [k]: v }))
+  const exportColumns = [
+    { label: 'ID', value: (item) => item._id },
+    { label: 'Name', value: (item) => item.name },
+    { label: 'Subtitle', value: (item) => item.subtitle },
+    { label: 'Country', value: (item) => item.country },
+    { label: 'Category', value: (item) => item.category },
+    { label: 'Description', value: (item) => item.description },
+    { label: 'Image', value: (item) => item.image },
+    { label: 'Rating', value: (item) => item.rating },
+    { label: 'Featured', value: (item) => item.isFeature ? 'Yes' : 'No' },
+    { label: 'Active', value: (item) => item.isActive ? 'Yes' : 'No' },
+    { label: 'Created At', value: (item) => formatDate(item.createdAt) },
+    { label: 'Updated At', value: (item) => formatDate(item.updatedAt) },
+  ]
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2"><span className="text-lg">+</span> Add Destination</button>
+      <div className="flex flex-col sm:flex-row justify-end gap-2">
+        <ExportButton filename="destinations" rows={items} columns={exportColumns} disabled={loading} />
+        <button onClick={openCreate} className="btn-primary flex items-center justify-center gap-2"><span className="text-lg">+</span> Add Destination</button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -81,12 +98,12 @@ export default function Destinations() {
               <h3 className="font-bold text-gray-900">{editing ? 'Edit Destination' : 'Add Destination'}</h3>
               <button onClick={() => setModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">×</button>
             </div>
-            <form onSubmit={save} className="p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={save} className="p-4 sm:p-5 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className="label">Name *</label><input className="input" value={form.name} onChange={(e) => f('name', e.target.value)} required /></div>
                 <div><label className="label">Subtitle *</label><input className="input" value={form.subtitle} onChange={(e) => f('subtitle', e.target.value)} required /></div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className="label">Country *</label><input className="input" value={form.country} onChange={(e) => f('country', e.target.value)} required /></div>
                 <div><label className="label">Category</label>
                   <select className="input" value={form.category} onChange={(e) => f('category', e.target.value)}>
@@ -97,7 +114,7 @@ export default function Destinations() {
               </div>
               <ImageUploadField label="Image" value={form.image} onChange={(url) => f('image', url)} />
               <div><label className="label">Description</label><textarea rows={3} className="input resize-none" value={form.description} onChange={(e) => f('description', e.target.value)} /></div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className="label">Rating</label><input type="number" step="0.1" min="0" max="5" className="input" value={form.rating} onChange={(e) => f('rating', e.target.value)} /></div>
                 <div className="flex items-end gap-4 pb-1">
                   <label className="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked={form.isFeature} onChange={(e) => f('isFeature', e.target.checked)} className="accent-primary" /> Featured</label>

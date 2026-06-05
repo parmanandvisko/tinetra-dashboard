@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
+import ExportButton from '../../components/ui/ExportButton'
+import { formatDate } from '../../utils/exportExcel'
 
 const typeColors = {
   destination: 'bg-blue-100 text-blue-700',
@@ -16,7 +18,7 @@ export default function Searches() {
 
   const load = () => {
     setLoading(true)
-    api.get(`/searches?limit=100${filterType ? `&selectedType=${filterType}` : ''}${search ? `&search=${search}` : ''}`)
+    api.get(`/searches?limit=1000${filterType ? `&selectedType=${filterType}` : ''}${search ? `&search=${search}` : ''}`)
       .then((r) => setItems(r.data.data))
       .catch(() => toast.error('Failed to load searches'))
       .finally(() => setLoading(false))
@@ -29,17 +31,31 @@ export default function Searches() {
     try { await api.delete(`/searches/${id}`); toast.success('Deleted'); load() }
     catch { toast.error('Delete failed') }
   }
+  const exportColumns = [
+    { label: 'ID', value: (item) => item._id },
+    { label: 'Search Query', value: (item) => item.query },
+    { label: 'Selected Name', value: (item) => item.selectedName },
+    { label: 'Selected Type', value: (item) => item.selectedType },
+    { label: 'Selected ID', value: (item) => item.selectedId },
+    { label: 'Category', value: (item) => item.category },
+    { label: 'Check In', value: (item) => item.checkIn },
+    { label: 'Guests', value: (item) => item.guests },
+    { label: 'Source', value: (item) => item.source },
+    { label: 'Created At', value: (item) => formatDate(item.createdAt) },
+    { label: 'Updated At', value: (item) => formatDate(item.updatedAt) },
+  ]
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3 justify-between">
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search query..." className="input w-64" />
-        <div className="flex gap-2">
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search query..." className="input w-full sm:w-64" />
+        <div className="flex gap-2 flex-wrap">
           {['', 'destination', 'package', 'general'].map((t) => (
             <button key={t} onClick={() => setFilterType(t)} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filterType === t ? 'bg-primary text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'}`}>
               {t === '' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
             </button>
           ))}
+          <ExportButton filename="searches" rows={items} columns={exportColumns} disabled={loading} />
         </div>
       </div>
 

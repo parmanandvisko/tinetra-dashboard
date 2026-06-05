@@ -5,7 +5,6 @@ import Dashboard from '../pages/Dashboard/Dashboard'
 import Packages from '../pages/Packages/Packages'
 import Destinations from '../pages/Destinations/Destinations'
 import AdminBlogs from '../pages/Blogs/AdminBlogs'
-import Categories from '../pages/Categories/Categories'
 import Contacts from '../pages/Contacts/Contacts'
 import Bookings from '../pages/Bookings/Bookings'
 import Searches from '../pages/Searches/Searches'
@@ -29,7 +28,6 @@ export default function AppRoutes() {
           <Route path="packages" element={<Packages />} />
           <Route path="destinations" element={<Destinations />} />
           <Route path="blogs" element={<AdminBlogs />} />
-          <Route path="categories" element={<Categories />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="searches" element={<Searches />} />

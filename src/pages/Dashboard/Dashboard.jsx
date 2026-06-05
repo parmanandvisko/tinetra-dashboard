@@ -7,7 +7,6 @@ const statCards = [
   { key: 'packages', label: 'Tour Packages', color: 'bg-purple-500', icon: '📦' },
   { key: 'blogs', label: 'Blog Posts', color: 'bg-orange-500', icon: '✍️' },
   { key: 'contacts', label: 'Total Contacts', color: 'bg-pink-500', icon: '✉️' },
-  { key: 'categories', label: 'Categories', color: 'bg-yellow-500', icon: '🏷️' },
   { key: 'newContacts', label: 'New Messages', color: 'bg-red-500', icon: '🔔' },
   { key: 'pendingBookings', label: 'Pending Bookings', color: 'bg-indigo-500', icon: '⏳' },
 ]

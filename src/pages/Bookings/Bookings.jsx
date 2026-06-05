@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
+import ExportButton from '../../components/ui/ExportButton'
+import { formatDate } from '../../utils/exportExcel'
 
 const statusColors = {
   pending: 'bg-yellow-100 text-yellow-700',
@@ -18,7 +20,7 @@ export default function Bookings() {
 
   const load = () => {
     setLoading(true)
-    const q = new URLSearchParams({ limit: 50, ...(filterStatus && { status: filterStatus }), ...(search && { search }) })
+    const q = new URLSearchParams({ limit: 1000, ...(filterStatus && { status: filterStatus }), ...(search && { search }) })
     api.get(`/bookings?${q}`).then((r) => setItems(r.data.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false))
   }
 
@@ -34,6 +36,22 @@ export default function Bookings() {
     try { await api.delete(`/bookings/${id}`); toast.success('Deleted'); load(); setSelected(null) }
     catch { toast.error('Failed') }
   }
+  const exportColumns = [
+    { label: 'ID', value: (item) => item._id },
+    { label: 'Name', value: (item) => item.name },
+    { label: 'Email', value: (item) => item.email },
+    { label: 'Phone', value: (item) => item.phone },
+    { label: 'Package', value: (item) => item.packageTitle || item.package?.title },
+    { label: 'Travel Date', value: (item) => item.travelDate ? new Date(item.travelDate).toLocaleDateString() : '' },
+    { label: 'Adults', value: (item) => item.adults },
+    { label: 'Children', value: (item) => item.children },
+    { label: 'Status', value: (item) => item.status },
+    { label: 'Payment Status', value: (item) => item.paymentStatus },
+    { label: 'Total Amount', value: (item) => item.totalAmount },
+    { label: 'Notes', value: (item) => item.notes },
+    { label: 'Created At', value: (item) => formatDate(item.createdAt) },
+    { label: 'Updated At', value: (item) => formatDate(item.updatedAt) },
+  ]
 
   return (
     <div className="space-y-4">
@@ -45,7 +63,10 @@ export default function Bookings() {
             </button>
           ))}
         </div>
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or email..." className="input w-60" />
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or email..." className="input w-full sm:w-60" />
+          <ExportButton filename="bookings" rows={items} columns={exportColumns} disabled={loading} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

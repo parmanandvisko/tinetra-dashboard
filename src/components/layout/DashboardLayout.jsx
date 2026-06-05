@@ -18,9 +18,9 @@ export default function DashboardLayout() {
 
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
+      <div className="flex-1 min-w-0 lg:ml-60 flex flex-col min-h-screen">
         <Header onMenuToggle={() => setSidebarOpen((p) => !p)} />
-        <main className="flex-1 p-4 lg:p-6">
+        <main className="flex-1 min-w-0 p-3 sm:p-4 lg:p-6 overflow-x-hidden">
           <Outlet />
         </main>
       </div>

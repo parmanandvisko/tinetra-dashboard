@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom'
 
 const titles = {
   dashboard: 'Dashboard', packages: 'Tour Packages', destinations: 'Destinations',
-  blogs: 'Blog Management', categories: 'Categories', contacts: 'Contact Messages',
+  blogs: 'Blog Management', contacts: 'Contact Messages',
   bookings: 'Bookings', searches: 'Website Searches', theme: 'Theme Settings',
 }
 
@@ -13,8 +13,8 @@ export default function Header({ onMenuToggle }) {
   const admin = JSON.parse(localStorage.getItem('admin_user') || '{}')
 
   return (
-    <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
-      <div className="flex items-center gap-3">
+    <header className="min-h-16 bg-white border-b border-gray-100 flex items-center justify-between gap-3 px-3 sm:px-4 lg:px-6 py-3 sticky top-0 z-30">
+      <div className="flex items-center gap-3 min-w-0">
         {/* Hamburger — mobile only */}
         <button
           onClick={onMenuToggle}
@@ -24,13 +24,13 @@ export default function Header({ onMenuToggle }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <div>
-          <h1 className="text-base lg:text-lg font-bold text-gray-900">{title}</h1>
+        <div className="min-w-0">
+          <h1 className="text-base lg:text-lg font-bold text-gray-900 truncate">{title}</h1>
           <p className="text-xs text-gray-400 hidden sm:block">Trinetra Admin Panel</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 lg:gap-3">
+      <div className="flex items-center gap-2 lg:gap-3 shrink-0">
         <a
           href="http://localhost:5173"
           target="_blank"

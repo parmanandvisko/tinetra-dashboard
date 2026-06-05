@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
+import ExportButton from '../../components/ui/ExportButton'
+import { formatDate } from '../../utils/exportExcel'
 
 const statusColors = { new: 'bg-blue-100 text-blue-700', read: 'bg-gray-100 text-gray-600', replied: 'bg-green-100 text-green-700' }
 
@@ -12,7 +14,7 @@ export default function Contacts() {
 
   const load = () => {
     setLoading(true)
-    api.get(`/contacts?limit=50${filterStatus ? `&status=${filterStatus}` : ''}`)
+    api.get(`/contacts?limit=1000${filterStatus ? `&status=${filterStatus}` : ''}`)
       .then((r) => setItems(r.data.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false))
   }
 
@@ -28,15 +30,29 @@ export default function Contacts() {
     try { await api.delete(`/contacts/${id}`); toast.success('Deleted'); load(); if (selected?._id === id) setSelected(null) }
     catch { toast.error('Failed') }
   }
+  const exportColumns = [
+    { label: 'ID', value: (item) => item._id },
+    { label: 'Name', value: (item) => item.name },
+    { label: 'Email', value: (item) => item.email },
+    { label: 'Phone', value: (item) => item.phone },
+    { label: 'Subject', value: (item) => item.subject },
+    { label: 'Message', value: (item) => item.message },
+    { label: 'Status', value: (item) => item.status },
+    { label: 'Created At', value: (item) => formatDate(item.createdAt) },
+    { label: 'Updated At', value: (item) => formatDate(item.updatedAt) },
+  ]
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        {['', 'new', 'read', 'replied'].map((s) => (
-          <button key={s} onClick={() => setFilterStatus(s)} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filterStatus === s ? 'bg-primary text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'}`}>
-            {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
-          </button>
-        ))}
+      <div className="flex flex-wrap gap-3 items-center justify-between">
+        <div className="flex gap-2 flex-wrap">
+          {['', 'new', 'read', 'replied'].map((s) => (
+            <button key={s} onClick={() => setFilterStatus(s)} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filterStatus === s ? 'bg-primary text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'}`}>
+              {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
+        <ExportButton filename="contacts" rows={items} columns={exportColumns} disabled={loading} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

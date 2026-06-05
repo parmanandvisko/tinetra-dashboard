@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
 import ImageUploadField from '../../components/form/ImageUploadField'
+import ExportButton from '../../components/ui/ExportButton'
+import { formatDate } from '../../utils/exportExcel'
 
 const EMPTY = { title: '', excerpt: '', content: '', image: '', author: 'Admin', status: 'published', readTime: '5 min read', tags: '' }
 
@@ -16,7 +18,7 @@ export default function AdminBlogs() {
 
   const load = () => {
     setLoading(true)
-    api.get(`/blogs?limit=50${search ? `&search=${search}` : ''}`).then((r) => setItems(r.data.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false))
+    api.get(`/blogs?limit=1000${search ? `&search=${search}` : ''}`).then((r) => setItems(r.data.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false))
   }
 
   useEffect(() => { load() }, [search])
@@ -42,15 +44,32 @@ export default function AdminBlogs() {
   }
 
   const f = (k, v) => setForm((p) => ({ ...p, [k]: v }))
+  const exportColumns = [
+    { label: 'ID', value: (item) => item._id },
+    { label: 'Title', value: (item) => item.title },
+    { label: 'Excerpt', value: (item) => item.excerpt },
+    { label: 'Content', value: (item) => item.content },
+    { label: 'Author', value: (item) => item.author },
+    { label: 'Status', value: (item) => item.status },
+    { label: 'Read Time', value: (item) => item.readTime },
+    { label: 'Tags', value: (item) => item.tags || [] },
+    { label: 'Image', value: (item) => item.image },
+    { label: 'Created At', value: (item) => formatDate(item.createdAt) },
+    { label: 'Updated At', value: (item) => formatDate(item.updatedAt) },
+  ]
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3 items-center justify-between">
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search blogs..." className="input w-64" />
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2"><span className="text-lg">+</span> New Blog</button>
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search blogs..." className="input w-full sm:w-64" />
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <ExportButton filename="blogs" rows={items} columns={exportColumns} disabled={loading} />
+          <button onClick={openCreate} className="btn-primary flex items-center justify-center gap-2 flex-1 sm:flex-none"><span className="text-lg">+</span> New Blog</button>
+        </div>
       </div>
 
       <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>{['Title', 'Author', 'Status', 'Read Time', 'Date', 'Actions'].map(h => <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>)}</tr>
@@ -83,6 +102,7 @@ export default function AdminBlogs() {
               ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {modal && (
@@ -92,11 +112,11 @@ export default function AdminBlogs() {
               <h3 className="font-bold text-gray-900">{editing ? 'Edit Blog' : 'New Blog Post'}</h3>
               <button onClick={() => setModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">×</button>
             </div>
-            <form onSubmit={save} className="p-5 space-y-4">
+            <form onSubmit={save} className="p-4 sm:p-5 space-y-4">
               <div><label className="label">Title *</label><input className="input" value={form.title} onChange={(e) => f('title', e.target.value)} required /></div>
               <div><label className="label">Excerpt *</label><textarea rows={2} className="input resize-none" value={form.excerpt} onChange={(e) => f('excerpt', e.target.value)} required /></div>
               <div><label className="label">Content *</label><textarea rows={6} className="input resize-none" value={form.content} onChange={(e) => f('content', e.target.value)} required /></div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className="label">Author</label><input className="input" value={form.author} onChange={(e) => f('author', e.target.value)} /></div>
                 <div><label className="label">Status</label>
                   <select className="input" value={form.status} onChange={(e) => f('status', e.target.value)}>
@@ -105,7 +125,7 @@ export default function AdminBlogs() {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className="label">Read Time</label><input className="input" value={form.readTime} onChange={(e) => f('readTime', e.target.value)} placeholder="5 min read" /></div>
                 <div><label className="label">Tags (comma-separated)</label><input className="input" value={form.tags} onChange={(e) => f('tags', e.target.value)} placeholder="travel, tips..." /></div>
               </div>

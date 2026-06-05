@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
 import ImageUploadField from '../../components/form/ImageUploadField'
+import ExportButton from '../../components/ui/ExportButton'
+import { formatDate } from '../../utils/exportExcel'
 
 const EMPTY = { title: '', duration: '', price: '', originalPrice: '', type: 'international', tag: '', description: '', image: '', isFeature: false, isActive: true }
 
@@ -16,7 +18,7 @@ export default function Packages() {
 
   const load = () => {
     setLoading(true)
-    api.get(`/packages?limit=50${search ? `&search=${search}` : ''}`)
+    api.get(`/packages?limit=1000${search ? `&search=${search}` : ''}`)
       .then((r) => setItems(r.data.data))
       .catch(() => toast.error('Failed to load packages'))
       .finally(() => setLoading(false))
@@ -45,15 +47,33 @@ export default function Packages() {
   }
 
   const f = (k, v) => setForm((p) => ({ ...p, [k]: v }))
+  const exportColumns = [
+    { label: 'ID', value: (item) => item._id },
+    { label: 'Title', value: (item) => item.title },
+    { label: 'Type', value: (item) => item.type },
+    { label: 'Duration', value: (item) => item.duration },
+    { label: 'Price', value: (item) => item.price },
+    { label: 'Original Price', value: (item) => item.originalPrice },
+    { label: 'Tag', value: (item) => item.tag },
+    { label: 'Description', value: (item) => item.description },
+    { label: 'Image', value: (item) => item.image },
+    { label: 'Featured', value: (item) => item.isFeature ? 'Yes' : 'No' },
+    { label: 'Active', value: (item) => item.isActive ? 'Yes' : 'No' },
+    { label: 'Created At', value: (item) => formatDate(item.createdAt) },
+    { label: 'Updated At', value: (item) => formatDate(item.updatedAt) },
+  ]
 
   return (
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search packages..." className="input w-64" />
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <span className="text-lg leading-none">+</span> Add Package
-        </button>
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search packages..." className="input w-full sm:w-64" />
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <ExportButton filename="packages" rows={items} columns={exportColumns} disabled={loading} />
+          <button onClick={openCreate} className="btn-primary flex items-center justify-center gap-2 flex-1 sm:flex-none">
+            <span className="text-lg leading-none">+</span> Add Package
+          </button>
+        </div>
       </div>
 
       {/* Table */}
@@ -102,9 +122,9 @@ export default function Packages() {
               <h3 className="font-bold text-gray-900">{editing ? 'Edit Package' : 'Add Package'}</h3>
               <button onClick={() => setModal(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
             </div>
-            <form onSubmit={save} className="p-5 space-y-4">
+            <form onSubmit={save} className="p-4 sm:p-5 space-y-4">
               <div><label className="label">Title *</label><input className="input" value={form.title} onChange={(e) => f('title', e.target.value)} required /></div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className="label">Duration *</label><input className="input" value={form.duration} onChange={(e) => f('duration', e.target.value)} placeholder="5 Days / 4 Nights" required /></div>
                 <div><label className="label">Type</label>
                   <select className="input" value={form.type} onChange={(e) => f('type', e.target.value)}>
@@ -113,7 +133,7 @@ export default function Packages() {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className="label">Price ($) *</label><input type="number" className="input" value={form.price} onChange={(e) => f('price', e.target.value)} required /></div>
                 <div><label className="label">Original Price ($)</label><input type="number" className="input" value={form.originalPrice} onChange={(e) => f('originalPrice', e.target.value)} /></div>
               </div>
