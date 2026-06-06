@@ -10,6 +10,7 @@ import Bookings from '../pages/Bookings/Bookings'
 import Searches from '../pages/Searches/Searches'
 import Theme from '../pages/Theme/Theme'
 import SiteContent from '../pages/SiteContent/SiteContent'
+import QuotationDownloads from '../pages/QuotationDownloads/QuotationDownloads'
 
 const isAuth = () => !!localStorage.getItem('admin_token')
 
@@ -31,6 +32,7 @@ export default function AppRoutes() {
           <Route path="contacts" element={<Contacts />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="searches" element={<Searches />} />
+          <Route path="quotation-downloads" element={<QuotationDownloads />} />
           <Route path="theme" element={<Theme />} />
           <Route path="content" element={<SiteContent />} />
         </Route>

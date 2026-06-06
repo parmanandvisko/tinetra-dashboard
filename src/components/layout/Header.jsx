@@ -4,6 +4,7 @@ const titles = {
   dashboard: 'Dashboard', packages: 'Tour Packages', destinations: 'Destinations',
   blogs: 'Blog Management', contacts: 'Contact Messages',
   bookings: 'Bookings', searches: 'Website Searches', theme: 'Theme Settings',
+  'quotation-downloads': 'Quotation Download Leads',
 }
 
 export default function Header({ onMenuToggle }) {

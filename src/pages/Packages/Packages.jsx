@@ -5,7 +5,25 @@ import ImageUploadField from '../../components/form/ImageUploadField'
 import ExportButton from '../../components/ui/ExportButton'
 import { formatDate } from '../../utils/exportExcel'
 
-const EMPTY = { title: '', duration: '', price: '', originalPrice: '', type: 'international', tag: '', description: '', image: '', isFeature: false, isActive: true }
+const EMPTY = {
+  title: '',
+  duration: '',
+  price: '',
+  originalPrice: '',
+  type: 'international',
+  tag: '',
+  description: '',
+  inclusions: '',
+  exclusions: '',
+  image: '',
+  isFeature: false,
+  isActive: true,
+}
+
+const linesToArray = (value) => value
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean)
 
 export default function Packages() {
   const [items, setItems] = useState([])
@@ -27,14 +45,29 @@ export default function Packages() {
   useEffect(() => { load() }, [search])
 
   const openCreate = () => { setEditing(null); setForm(EMPTY); setModal(true) }
-  const openEdit = (item) => { setEditing(item); setForm({ ...item, price: String(item.price), originalPrice: String(item.originalPrice || '') }); setModal(true) }
+  const openEdit = (item) => {
+    setEditing(item)
+    setForm({
+      ...item,
+      price: String(item.price),
+      originalPrice: String(item.originalPrice || ''),
+      inclusions: (item.inclusions || []).join('\n'),
+      exclusions: (item.exclusions || []).join('\n'),
+    })
+    setModal(true)
+  }
 
   const save = async (e) => {
     e.preventDefault()
     setSaving(true)
     try {
-      if (editing) { await api.put(`/packages/${editing._id}`, form); toast.success('Package updated') }
-      else { await api.post('/packages', form); toast.success('Package created') }
+      const payload = {
+        ...form,
+        inclusions: linesToArray(form.inclusions),
+        exclusions: linesToArray(form.exclusions),
+      }
+      if (editing) { await api.put(`/packages/${editing._id}`, payload); toast.success('Package updated') }
+      else { await api.post('/packages', payload); toast.success('Package created') }
       setModal(false); load()
     } catch (err) { toast.error(err.response?.data?.message || 'Error saving') }
     finally { setSaving(false) }
@@ -56,6 +89,8 @@ export default function Packages() {
     { label: 'Original Price', value: (item) => item.originalPrice },
     { label: 'Tag', value: (item) => item.tag },
     { label: 'Description', value: (item) => item.description },
+    { label: 'Inclusions', value: (item) => (item.inclusions || []).join('\n') },
+    { label: 'Exclusions', value: (item) => (item.exclusions || []).join('\n') },
     { label: 'Image', value: (item) => item.image },
     { label: 'Featured', value: (item) => item.isFeature ? 'Yes' : 'No' },
     { label: 'Active', value: (item) => item.isActive ? 'Yes' : 'No' },
@@ -139,7 +174,17 @@ export default function Packages() {
               </div>
               <div><label className="label">Tag</label><input className="input" value={form.tag} onChange={(e) => f('tag', e.target.value)} placeholder="Hill Stations, Beach..." /></div>
               <ImageUploadField label="Image" value={form.image} onChange={(url) => f('image', url)} />
-              <div><label className="label">Description</label><textarea rows={3} className="input resize-none" value={form.description} onChange={(e) => f('description', e.target.value)} /></div>
+              <div><label className="label">Description</label><textarea rows={5} className="input resize-y" value={form.description} onChange={(e) => f('description', e.target.value)} placeholder="Enter the package description. Line breaks will be preserved." /></div>
+              <div>
+                <label className="label">Package Inclusions</label>
+                <textarea rows={7} className="input resize-y" value={form.inclusions} onChange={(e) => f('inclusions', e.target.value)} placeholder={'Enter one inclusion per line\n✅ Hotel accommodation\n✅ Daily breakfast and dinner'} />
+                <p className="mt-1 text-xs text-gray-400">Enter each inclusion on a new line.</p>
+              </div>
+              <div>
+                <label className="label">Package Exclusions</label>
+                <textarea rows={7} className="input resize-y" value={form.exclusions} onChange={(e) => f('exclusions', e.target.value)} placeholder={'Enter one exclusion per line\n❌ Airfare or train tickets\n❌ Personal expenses'} />
+                <p className="mt-1 text-xs text-gray-400">Enter each exclusion on a new line.</p>
+              </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" checked={form.isFeature} onChange={(e) => f('isFeature', e.target.checked)} className="accent-primary" /> Featured</label>
                 <label className="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" checked={form.isActive} onChange={(e) => f('isActive', e.target.checked)} className="accent-primary" /> Active</label>
