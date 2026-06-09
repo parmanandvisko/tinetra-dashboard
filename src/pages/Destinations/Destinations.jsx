@@ -4,6 +4,7 @@ import api from '../../services/api'
 import ImageUploadField from '../../components/form/ImageUploadField'
 import ExportButton from '../../components/ui/ExportButton'
 import { formatDate } from '../../utils/exportExcel'
+import { imageUrl } from '../../utils/image'
 
 const EMPTY = { name: '', subtitle: '', country: '', category: 'international', description: '', image: '', isFeature: false, isActive: true, rating: 4.5 }
 
@@ -70,7 +71,7 @@ export default function Destinations() {
           : items.map((item) => (
             <div key={item._id} className="card overflow-hidden group">
               <div className="relative h-36">
-                {item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl">🌍</div>}
+                {item.image ? <img src={imageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl">🌍</div>}
                 <div className="absolute top-2 right-2 flex gap-1">
                   {item.isFeature && <span className="bg-yellow-400 text-yellow-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Featured</span>}
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}`}>{item.isActive ? 'Active' : 'Inactive'}</span>

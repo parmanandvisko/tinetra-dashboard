@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { uploadImage } from '../../services/upload'
+import { imageUrl } from '../../utils/image'
 
 export default function ImageUploadField({ label, value, onChange }) {
   const [uploading, setUploading] = useState(false)
@@ -37,7 +38,7 @@ export default function ImageUploadField({ label, value, onChange }) {
       </div>
       {value && (
         <div className="mt-2 h-24 rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
-          <img src={value} alt="" className="w-full h-full object-cover" />
+          <img src={imageUrl(value)} alt="" className="w-full h-full object-cover" />
         </div>
       )}
     </div>

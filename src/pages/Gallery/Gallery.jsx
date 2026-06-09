@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '../../services/api'
 import { uploadMedia } from '../../services/upload'
+import { imageUrl } from '../../utils/image'
 
 const EMPTY = {
   title: '',
@@ -132,8 +133,8 @@ export default function Gallery() {
         {form.mediaUrl && (
           <div className="h-56 max-w-md overflow-hidden rounded-xl bg-gray-100">
             {form.mediaType === 'video'
-              ? <video src={form.mediaUrl} controls className="w-full h-full object-cover" />
-              : <img src={form.mediaUrl} alt="" className="w-full h-full object-cover" />}
+              ? <video src={imageUrl(form.mediaUrl)} controls className="w-full h-full object-cover" />
+              : <img src={imageUrl(form.mediaUrl)} alt="" className="w-full h-full object-cover" />}
           </div>
         )}
 
@@ -159,8 +160,8 @@ export default function Gallery() {
               <div key={item._id} className="overflow-hidden rounded-xl border border-gray-100 bg-white">
                 <div className="h-44 bg-gray-100">
                   {item.mediaType === 'video'
-                    ? <video src={item.mediaUrl} controls preload="metadata" className="w-full h-full object-cover" />
-                    : <img src={item.mediaUrl} alt={item.title} className="w-full h-full object-cover" />}
+                    ? <video src={imageUrl(item.mediaUrl)} controls preload="metadata" className="w-full h-full object-cover" />
+                    : <img src={imageUrl(item.mediaUrl)} alt={item.title} className="w-full h-full object-cover" />}
                 </div>
                 <div className="p-3">
                   <div className="flex items-start justify-between gap-2">

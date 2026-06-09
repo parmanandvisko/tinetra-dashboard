@@ -3,8 +3,9 @@ import toast from 'react-hot-toast'
 import api from '../../services/api'
 import ImageUploadField from '../../components/form/ImageUploadField'
 import RichTextField from '../../components/form/RichTextField'
+import { imageUrl } from '../../utils/image'
 
-const TABS = ['Business Info', 'Social Links', 'Hero Section', 'About Us', 'Stats', 'Team', 'FAQ', 'Legal Pages', 'Payment Details']
+const TABS = ['Business Info', 'Social Links', 'Hero Section', 'About Us', 'Stats', 'Team', 'Testimonials', 'FAQ', 'Legal Pages', 'Payment Details']
 
 const DEFAULT_TERMS_CONTENT = `## 1. Company Information
 Trinetra Global Holidays is a registered travel company based in Ambernath West, Maharashtra, India - 421505. Contact: info@trinetraglobalholidays.com | +91 98924 94688
@@ -95,6 +96,8 @@ const LIMITS = {
   statLabel: 26,
   teamName: 45,
   teamRole: 55,
+  testimonialLocation: 60,
+  testimonialText: 220,
   faqCategory: 45,
   faqQuestion: 140,
   faqAnswer: 800,
@@ -115,12 +118,14 @@ const DEFAULT = {
   facebook: '', instagram: '', linkedin: '', twitter: '', youtube: '',
   heroTitle: 'Where Would You Like To Go?',
   heroSubtitle: 'One life. Many destinations',
-  heroBg: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&auto=format&fit=crop',
+  heroBg: '',
   aboutTitle: 'About Trinetra Global Holidays',
   aboutSubtitle: 'Your Trusted Travel Partner Since 2009',
   aboutDescription: '',
   aboutImage: '',
   teamMembers: [],
+  customerPhotos: [],
+  customerTestimonials: [],
   stats: [{ value: '15+', label: 'Years Experience' }, { value: '5000+', label: 'Happy Travelers' }, { value: '200+', label: 'Destinations' }, { value: '100%', label: 'Satisfaction' }],
   faqs: [],
   termsContent: DEFAULT_TERMS_CONTENT,
@@ -165,6 +170,25 @@ export default function SiteContent() {
   const addTeam = () => set('teamMembers', [...(form.teamMembers || []), { name: '', role: '', img: '' }])
   const setTeam = (i, k, v) => { const t = [...(form.teamMembers || [])]; t[i] = { ...t[i], [k]: v }; set('teamMembers', t) }
   const removeTeam = (i) => set('teamMembers', form.teamMembers.filter((_, idx) => idx !== i))
+
+  const addCustomerPhoto = () => set('customerPhotos', [...(form.customerPhotos || []), ''])
+  const setCustomerPhoto = (i, value) => {
+    const photos = [...(form.customerPhotos || [])]
+    photos[i] = value
+    set('customerPhotos', photos)
+  }
+  const removeCustomerPhoto = (i) => set('customerPhotos', form.customerPhotos.filter((_, idx) => idx !== i))
+
+  const addTestimonial = () => set('customerTestimonials', [
+    ...(form.customerTestimonials || []),
+    { name: '', location: '', text: '', img: '', rating: 5 },
+  ])
+  const setTestimonial = (i, key, value) => {
+    const testimonials = [...(form.customerTestimonials || [])]
+    testimonials[i] = { ...testimonials[i], [key]: value }
+    set('customerTestimonials', testimonials)
+  }
+  const removeTestimonial = (i) => set('customerTestimonials', form.customerTestimonials.filter((_, idx) => idx !== i))
 
   // Stats helpers
   const addStat = () => set('stats', [...(form.stats || []), { value: '', label: '' }])
@@ -259,7 +283,7 @@ export default function SiteContent() {
             <ImageUploadField label="Background Image" value={form.heroBg} onChange={url => set('heroBg', url)} />
             {form.heroBg && (
               <div className="rounded-xl overflow-hidden h-40">
-                <img src={form.heroBg} alt="Hero preview" className="w-full h-full object-cover" />
+                <img src={imageUrl(form.heroBg)} alt="Hero preview" className="w-full h-full object-cover" />
               </div>
             )}
           </div>
@@ -310,7 +334,7 @@ export default function SiteContent() {
                 {(form.teamMembers || []).map((m, i) => (
                   <div key={i} className="card p-4 flex gap-3 items-start">
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
-                      {m.img ? <img src={m.img} alt={m.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">👤</div>}
+                      {m.img ? <img src={imageUrl(m.img)} alt={m.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">👤</div>}
                     </div>
                     <div className="flex-1 space-y-2">
                       <input className="input py-1.5 text-sm" maxLength={LIMITS.teamName} value={m.name} onChange={e => setTeam(i, 'name', e.target.value)} placeholder="Full Name" />
@@ -324,8 +348,54 @@ export default function SiteContent() {
             </div>
         )}
 
-        {/* Tab 6: FAQ */}
+        {/* Tab 6: Testimonials */}
         {tab === 6 && (
+          <div className="space-y-8">
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wide text-primary">Traveler Photos</h3>
+                  <p className="text-xs text-gray-400 mt-1">Small customer photos shown in the home hero section.</p>
+                </div>
+                <button onClick={addCustomerPhoto} className="btn-secondary text-xs px-3 py-1.5">+ Add Photo</button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(form.customerPhotos || []).map((photo, i) => (
+                  <div key={i} className="card p-3 relative">
+                    <button onClick={() => removeCustomerPhoto(i)} className="absolute -top-1.5 -right-1.5 z-10 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600">×</button>
+                    <ImageUploadField label={`Traveler Photo ${i + 1}`} value={photo} onChange={url => setCustomerPhoto(i, url)} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wide text-primary">Customer Testimonials</h3>
+                <button onClick={addTestimonial} className="btn-secondary text-xs px-3 py-1.5">+ Add Testimonial</button>
+              </div>
+              <div className="space-y-4">
+                {(form.customerTestimonials || []).map((testimonial, i) => (
+                  <div key={i} className="card p-4 relative">
+                    <button onClick={() => removeTestimonial(i)} className="absolute -top-1.5 -right-1.5 z-10 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600">×</button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                      <div><label className="label">Customer Name</label><input className="input" maxLength={LIMITS.teamName} value={testimonial.name || ''} onChange={e => setTestimonial(i, 'name', e.target.value)} /></div>
+                      <div><label className="label">Location</label><input className="input" maxLength={LIMITS.testimonialLocation} value={testimonial.location || ''} onChange={e => setTestimonial(i, 'location', e.target.value)} /></div>
+                    </div>
+                    <div className="mb-3"><label className="label">Review</label><textarea rows={3} className="input resize-none" maxLength={LIMITS.testimonialText} value={testimonial.text || ''} onChange={e => setTestimonial(i, 'text', e.target.value)} />{count(testimonial.text, LIMITS.testimonialText)}</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+                      <ImageUploadField label="Customer Photo" value={testimonial.img || ''} onChange={url => setTestimonial(i, 'img', url)} />
+                      <div><label className="label">Rating</label><input type="number" min="1" max="5" className="input" value={testimonial.rating || 5} onChange={e => setTestimonial(i, 'rating', Number(e.target.value))} /></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 7: FAQ */}
+        {tab === 7 && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wide text-primary">FAQ Manager</h3>
@@ -360,8 +430,8 @@ export default function SiteContent() {
           </div>
         )}
 
-        {/* Tab 7: Legal Pages */}
-        {tab === 7 && (
+        {/* Tab 8: Legal Pages */}
+        {tab === 8 && (
           <div className="space-y-6">
             <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wide text-primary">Legal Page Content</h3>
             <p className="text-xs text-gray-400">Use plain text. Separate sections with a blank line. Use "## Section Title" for headings.</p>
@@ -377,8 +447,8 @@ export default function SiteContent() {
           </div>
         )}
 
-        {/* Tab 8: Payment Details */}
-        {tab === 8 && (
+        {/* Tab 9: Payment Details */}
+        {tab === 9 && (
           <div className="space-y-4">
             <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wide text-primary">Payment Details</h3>
             <p className="text-xs text-gray-400">Add bank account, UPI, QR instructions, advance payment notes, or payment policy shown on the website.</p>

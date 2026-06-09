@@ -4,6 +4,7 @@ import api from '../../services/api'
 import ImageUploadField from '../../components/form/ImageUploadField'
 import ExportButton from '../../components/ui/ExportButton'
 import { formatDate } from '../../utils/exportExcel'
+import { imageUrl } from '../../utils/image'
 
 const EMPTY = {
   title: '',
@@ -25,6 +26,12 @@ const linesToArray = (value) => value
   .split(/\r?\n/)
   .map((line) => line.trim())
   .filter(Boolean)
+
+const formatINR = (value) => Number(value || 0).toLocaleString('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0,
+})
 
 export default function Packages() {
   const [items, setItems] = useState([])
@@ -88,8 +95,8 @@ export default function Packages() {
     { label: 'Title', value: (item) => item.title },
     { label: 'Type', value: (item) => item.type },
     { label: 'Duration', value: (item) => item.duration },
-    { label: 'Price', value: (item) => item.price },
-    { label: 'Original Price', value: (item) => item.originalPrice },
+    { label: 'Price (INR)', value: (item) => formatINR(item.price) },
+    { label: 'Original Price (INR)', value: (item) => item.originalPrice ? formatINR(item.originalPrice) : '' },
     { label: 'Discount (%)', value: (item) => item.discount },
     { label: 'Tag', value: (item) => item.tag },
     { label: 'Description', value: (item) => item.description },
@@ -131,13 +138,13 @@ export default function Packages() {
                 <tr key={item._id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      {item.image && <img src={item.image} alt="" className="w-10 h-8 object-cover rounded-lg" />}
+                      {item.image && <img src={imageUrl(item.image)} alt="" className="w-10 h-8 object-cover rounded-lg" />}
                       <span className="font-medium text-gray-900 line-clamp-1">{item.title}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3"><span className="capitalize text-gray-600">{item.type}</span></td>
                   <td className="px-4 py-3 text-gray-600">{item.duration}</td>
-                  <td className="px-4 py-3 font-semibold text-primary">${item.price}</td>
+                  <td className="px-4 py-3 font-semibold text-primary">{formatINR(item.price)}</td>
                   <td className="px-4 py-3">{item.discount > 0 ? <span className="text-blue-700 text-xs font-semibold bg-blue-50 px-2 py-0.5 rounded-full">{item.discount}% Off</span> : <span className="text-gray-400 text-xs">None</span>}</td>
                   <td className="px-4 py-3">{item.isFeature ? <span className="text-green-600 text-xs font-semibold bg-green-50 px-2 py-0.5 rounded-full">Yes</span> : <span className="text-gray-400 text-xs">No</span>}</td>
                   <td className="px-4 py-3"><span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{item.isActive ? 'Active' : 'Inactive'}</span></td>
@@ -174,8 +181,8 @@ export default function Packages() {
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div><label className="label">Price ($) *</label><input type="number" className="input" value={form.price} onChange={(e) => f('price', e.target.value)} required /></div>
-                <div><label className="label">Original Price ($)</label><input type="number" className="input" value={form.originalPrice} onChange={(e) => f('originalPrice', e.target.value)} /></div>
+                <div><label className="label">Price (₹ INR) *</label><input type="number" min="0" className="input" value={form.price} onChange={(e) => f('price', e.target.value)} required /></div>
+                <div><label className="label">Original Price (₹ INR)</label><input type="number" min="0" className="input" value={form.originalPrice} onChange={(e) => f('originalPrice', e.target.value)} /></div>
                 <div><label className="label">Discount (%)</label><input type="number" min="0" max="100" className="input" value={form.discount} onChange={(e) => f('discount', e.target.value)} placeholder="30" /></div>
               </div>
               <div><label className="label">Tag</label><input className="input" value={form.tag} onChange={(e) => f('tag', e.target.value)} placeholder="Hill Stations, Beach..." /></div>

@@ -4,6 +4,7 @@ import api from '../../services/api'
 import ImageUploadField from '../../components/form/ImageUploadField'
 import ExportButton from '../../components/ui/ExportButton'
 import { formatDate } from '../../utils/exportExcel'
+import { imageUrl } from '../../utils/image'
 
 const EMPTY = { title: '', excerpt: '', content: '', image: '', author: 'Admin', status: 'published', readTime: '5 min read', tags: '' }
 
@@ -81,7 +82,7 @@ export default function AdminBlogs() {
                 <tr key={item._id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      {item.image && <img src={item.image} alt="" className="w-10 h-8 object-cover rounded-lg" />}
+                      {item.image && <img src={imageUrl(item.image)} alt="" className="w-10 h-8 object-cover rounded-lg" />}
                       <div>
                         <p className="font-medium text-gray-900 line-clamp-1">{item.title}</p>
                         <p className="text-xs text-gray-400 line-clamp-1">{item.excerpt}</p>

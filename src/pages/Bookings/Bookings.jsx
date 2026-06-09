@@ -11,6 +11,12 @@ const statusColors = {
   completed: 'bg-blue-100 text-blue-700',
 }
 
+const formatINR = (value) => Number(value || 0).toLocaleString('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0,
+})
+
 export default function Bookings() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
@@ -110,7 +116,7 @@ export default function Bookings() {
             <div className="space-y-4">
               <h3 className="font-bold text-gray-900">Booking Details</h3>
               <div className="space-y-2 text-sm">
-                {[['Name', selected.name], ['Email', selected.email], ['Phone', selected.phone], ['Package', selected.packageTitle || selected.package?.title || '—'], ['Travel Date', selected.travelDate ? new Date(selected.travelDate).toLocaleDateString() : '—'], ['Adults', selected.adults], ['Children', selected.children], ['Total', selected.totalAmount ? `$${selected.totalAmount}` : '—']].map(([k, v]) => (
+                {[['Name', selected.name], ['Email', selected.email], ['Phone', selected.phone], ['Package', selected.packageTitle || selected.package?.title || '—'], ['Travel Date', selected.travelDate ? new Date(selected.travelDate).toLocaleDateString() : '—'], ['Adults', selected.adults], ['Children', selected.children], ['Total', selected.totalAmount ? formatINR(selected.totalAmount) : '—']].map(([k, v]) => (
                   <div key={k} className="flex justify-between">
                     <span className="text-gray-500">{k}</span>
                     <span className="font-medium text-gray-900 text-right">{v}</span>
