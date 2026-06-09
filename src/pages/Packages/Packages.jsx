@@ -10,6 +10,7 @@ const EMPTY = {
   duration: '',
   price: '',
   originalPrice: '',
+  discount: '',
   type: 'international',
   tag: '',
   description: '',
@@ -51,6 +52,7 @@ export default function Packages() {
       ...item,
       price: String(item.price),
       originalPrice: String(item.originalPrice || ''),
+      discount: String(item.discount || ''),
       inclusions: (item.inclusions || []).join('\n'),
       exclusions: (item.exclusions || []).join('\n'),
     })
@@ -63,6 +65,7 @@ export default function Packages() {
     try {
       const payload = {
         ...form,
+        discount: Number(form.discount) || 0,
         inclusions: linesToArray(form.inclusions),
         exclusions: linesToArray(form.exclusions),
       }
@@ -87,6 +90,7 @@ export default function Packages() {
     { label: 'Duration', value: (item) => item.duration },
     { label: 'Price', value: (item) => item.price },
     { label: 'Original Price', value: (item) => item.originalPrice },
+    { label: 'Discount (%)', value: (item) => item.discount },
     { label: 'Tag', value: (item) => item.tag },
     { label: 'Description', value: (item) => item.description },
     { label: 'Inclusions', value: (item) => (item.inclusions || []).join('\n') },
@@ -116,13 +120,13 @@ export default function Packages() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>{['Title', 'Type', 'Duration', 'Price', 'Featured', 'Status', 'Actions'].map(h => <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>)}</tr>
+              <tr>{['Title', 'Type', 'Duration', 'Price', 'Discount', 'Featured', 'Status', 'Actions'].map(h => <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
-                <tr><td colSpan={7} className="px-4 py-10 text-center text-gray-400">Loading...</td></tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-gray-400">Loading...</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-10 text-center text-gray-400">No packages found</td></tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-gray-400">No packages found</td></tr>
               ) : items.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3">
@@ -134,6 +138,7 @@ export default function Packages() {
                   <td className="px-4 py-3"><span className="capitalize text-gray-600">{item.type}</span></td>
                   <td className="px-4 py-3 text-gray-600">{item.duration}</td>
                   <td className="px-4 py-3 font-semibold text-primary">${item.price}</td>
+                  <td className="px-4 py-3">{item.discount > 0 ? <span className="text-blue-700 text-xs font-semibold bg-blue-50 px-2 py-0.5 rounded-full">{item.discount}% Off</span> : <span className="text-gray-400 text-xs">None</span>}</td>
                   <td className="px-4 py-3">{item.isFeature ? <span className="text-green-600 text-xs font-semibold bg-green-50 px-2 py-0.5 rounded-full">Yes</span> : <span className="text-gray-400 text-xs">No</span>}</td>
                   <td className="px-4 py-3"><span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{item.isActive ? 'Active' : 'Inactive'}</span></td>
                   <td className="px-4 py-3">
@@ -168,9 +173,10 @@ export default function Packages() {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div><label className="label">Price ($) *</label><input type="number" className="input" value={form.price} onChange={(e) => f('price', e.target.value)} required /></div>
                 <div><label className="label">Original Price ($)</label><input type="number" className="input" value={form.originalPrice} onChange={(e) => f('originalPrice', e.target.value)} /></div>
+                <div><label className="label">Discount (%)</label><input type="number" min="0" max="100" className="input" value={form.discount} onChange={(e) => f('discount', e.target.value)} placeholder="30" /></div>
               </div>
               <div><label className="label">Tag</label><input className="input" value={form.tag} onChange={(e) => f('tag', e.target.value)} placeholder="Hill Stations, Beach..." /></div>
               <ImageUploadField label="Image" value={form.image} onChange={(url) => f('image', url)} />

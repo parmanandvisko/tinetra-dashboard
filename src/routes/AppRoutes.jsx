@@ -11,6 +11,7 @@ import Searches from '../pages/Searches/Searches'
 import Theme from '../pages/Theme/Theme'
 import SiteContent from '../pages/SiteContent/SiteContent'
 import QuotationDownloads from '../pages/QuotationDownloads/QuotationDownloads'
+import Gallery from '../pages/Gallery/Gallery'
 
 const isAuth = () => !!localStorage.getItem('admin_token')
 
@@ -28,6 +29,7 @@ export default function AppRoutes() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="packages" element={<Packages />} />
           <Route path="destinations" element={<Destinations />} />
+          <Route path="gallery" element={<Gallery />} />
           <Route path="blogs" element={<AdminBlogs />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="bookings" element={<Bookings />} />
